@@ -1,0 +1,153 @@
+#include<cstdio>    
+#include<cstring>    
+#include<queue>    
+#include<cmath>    
+using namespace std;    
+const int Ni = 210;    
+const int MAX = 1<<26;    
+struct Edge{    
+    int u,v,c;    
+    int next;    
+}edge[20*Ni];    
+int n,m;    
+int edn;//边数    
+int p[Ni];//父亲    
+int d[Ni];    
+int sp,tp;//原点，汇点    
+   
+void addedge(int u,int v,int c)    
+{    
+    edge[edn].u=u; edge[edn].v=v; edge[edn].c=c;    
+    edge[edn].next=p[u]; p[u]=edn++;    
+   
+    edge[edn].u=v; edge[edn].v=u; edge[edn].c=0;    
+    edge[edn].next=p[v]; p[v]=edn++;    
+}    
+int bfs()    
+{    
+    queue <int> q;    
+    memset(d,-1,sizeof(d));    
+    d[sp]=0;    
+    q.push(sp);    
+    while(!q.empty())    
+    {    
+        int cur=q.front();    
+        q.pop();    
+        for(int i=p[cur];i!=-1;i=edge[i].next)    
+        {    
+            int v=edge[i].v;    
+            if(d[v]==-1 && edge[i].c>0)    
+            {    
+                d[v]=d[cur]+1; 
+                q.push(v);
+            }    
+        }    
+    }    
+    return d[tp] != -1; 
+} 
+int dfs(int a,int b)    
+{    
+    int r=0;    
+    if(a==tp)return b;    
+    for(int i=p[a];i!=-1 && r<b;i=edge[i].next)    
+    {    
+        int v=edge[i].v;    
+        if(edge[i].c>0 && d[v]==d[a]+1)    
+        {    
+            int x=min(edge[i].c,b-r);    
+            x=dfs(v,x);    
+            r+=x;    
+            edge[i].c-=x;    
+            edge[i^1].c+=x;    
+        }    
+    }    
+    if(!r)d[a]=-2;    
+    return r;    
+}    
+   
+int dinic(int sp,int tp)    
+{    
+    int total=0,t;    
+    while(bfs())    
+    {    
+        while(t=dfs(sp,MAX))    
+        total+=t;    
+    }    
+    return total;    
+}
+int main()    
+{    
+    int i,u,v,c;    
+    while(~scanf("%d%d",&m,&n))    
+    {    
+        edn=0;//初始化    
+        memset(p,-1,sizeof(p));    
+        sp=1;tp=n;    
+        for(i=0;i<m;i++)    
+        {    
+            scanf("%d%d%d",&u,&v,&c);    
+            addedge(u,v,c);    
+        }    
+        printf("%d\n",dinic(sp,tp));    
+    }    
+    return 0;    
+}    
+
+
+
+
+const   int oo=1e9;  //无穷  
+const   int mm=11111111;  //边  
+const   int mn=888888;  //点  
+int node,src,dest,edge;    
+int ver[mm],flow[mm],cost[mm],nex[mm];    
+int head[mn],dis[mn],p[mn],q[mn],vis[mn];    
+/**这些变量基本与最大流相同，增加了  
+ cost 表示边的费用，  
+ p 记录可行流上节点对应的反向边  
+ */    
+void prepare(int _node,int _src,int _dest)  //预处理   点的个数  起点  终点  
+{    
+    node=_node,src=_src,dest=_dest;    
+    for(int i=0; i<node; i++)head[i]=-1,vis[i]=0;    
+    edge=0;    
+}    
+void addedge(int u,int v,int f,int c)    
+{    
+    ver[edge]=v,flow[edge]=f,cost[edge]=c,nex[edge]=head[u],head[u]=edge++;    
+    ver[edge]=u,flow[edge]=0,cost[edge]=-c,nex[edge]=head[v],head[v]=edge++;    
+}    
+/**以上同最大流*/    
+/**spfa 求最短路，并用 p 记录最短路上的边*/    
+bool spfa()    
+{    
+    int i,u,v,l,r=0,tmp;    
+    for(i=0; i<node; ++i)dis[i]=oo;    
+    dis[q[r++]=src]=0;    
+    p[src]=p[dest]=-1;    
+    for(l=0; l!=r; (++l>=mn)?l=0:l)    
+        for(i=head[u=q[l]],vis[u]=0; i>=0; i=nex[i])    
+            if(flow[i]&&dis[v=ver[i]]>(tmp=dis[u]+cost[i]))    
+            {    
+                dis[v]=tmp;
+                p[v]=i^1;
+                if(vis[v]) continue;
+                vis[q[r++]=v]=1;
+                if(r>=mn)r=0;
+            }
+    return p[dest]>-1;
+}
+/**源点到汇点的一条最短路即可行流，不断的找这样的可行流*/    
+int SpfaFlow()    
+{    
+    int i,ret=0,delta;    
+    while(spfa())    
+    {    
+        for(i=p[dest],delta=oo; i>=0; i=p[ver[i]])    
+            if(flow[i^1]<delta)delta=flow[i^1];    
+        for(i=p[dest]; i>=0; i=p[ver[i]])    
+            flow[i]+=delta,flow[i^1]-=delta;    
+        ret+=delta*dis[dest];    
+    }    
+    return ret;    
+}    

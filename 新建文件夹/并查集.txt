@@ -1,0 +1,12 @@
+int findfa(int t)
+{
+	return fa[t]==t?fa[t]:fa[t]=findfa(fa[t]);
+}
+
+
+if(findfa(u)!=findfa(v))
+{
+	fa[findfa(u)]=findfa(v);
+}
+
+uºÍvÊÇµã

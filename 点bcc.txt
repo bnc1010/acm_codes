@@ -1,0 +1,140 @@
+#include<stdio.h>
+#include<iostream>
+#include<string.h>
+using namespace std;
+typedef long long ll;
+const int N=1e5+3;
+
+int head[N],cnt;
+int ans1,ans2;
+struct node{
+    int u,v,nxt;
+}edge[N<<1];
+
+void addedge(int u,int v){
+    edge[++cnt].v=v;
+    edge[cnt].u=u;
+    edge[cnt].nxt=head[u];
+    head[u]=cnt;
+}
+
+int dfn[N],low[N],st[N],bcc[N],bj[N],top,tt,bccid;
+bool vis[N<<1],iscut[N<<1];
+
+void tarjan(int u,int fa){
+    dfn[u]=low[u]=++tt;
+    //新点初始化
+    int child=0;
+    //初始节点需要两个以上儿子且dfn[root]<=low[v]才是割点
+    for(int i=head[u];~i;i=edge[i].nxt){
+        int v=edge[i].v;
+        if(vis[i])continue;
+        vis[i]=vis[i^1]=1;
+        st[++top]=i;//边入栈
+        if(!dfn[v]){
+            child++;
+            tarjan(v,u);
+            low[u]=min(low[u],low[v]);
+            if(dfn[u]<low[v])ans1++;//判桥
+            if(dfn[u]<=low[v]){
+                iscut[u]=1;
+                bccid++;
+                int num1=0,num2=0;//记录点bcc中边的数量和点的数量
+                for(;;){
+                    num1++;
+                    int j=st[top--];
+                    if(bj[edge[j].v]!=bccid){bj[edge[j].v]=bccid;num2++;}
+                    if(bj[edge[j^1].v]!=bccid){bj[edge[j^1].v]=bccid;num2++;}
+                    bcc[(j>>1)+1]=bccid;//标记边所属的bcc
+                    if(i==j)break;
+                }
+                if(num1>num2)ans2+=num1;
+            }
+        }
+        else low[u]=min(low[u],dfn[v]);
+    }
+    if(u==fa&&child<2)iscut[u]=0;
+    //如果初始节点没有两个以上的儿子，标记清零 isCut[i]=1表示该点是割点
+}
+
+void init(){
+    memset(bcc,0, sizeof(bcc));
+    memset(dfn,0, sizeof(dfn));
+    memset(vis,0, sizeof(vis));
+    memset(iscut,0, sizeof(iscut));
+    memset(head,-1, sizeof(head));
+    memset(bj,0, sizeof(bj));
+    cnt=-1;
+    top=tt=bccid=0;
+    ans1=ans2=0;
+}
+
+int main(){
+    int n,m;
+    while (~scanf("%d%d",&n,&m)){
+        if(!n&&!m)break;
+        init();
+        for(int i=1,u,v;i<=m;i++){
+            scanf("%d%d",&u,&v);
+            addedge(u,v);
+            addedge(v,u);
+        }
+        for(int i=0;i<n;i++){
+            if(!dfn[i]){
+                tarjan(i,-1);
+            }
+        }
+        printf("%d %d\n",ans1,ans2);
+    }
+    return 0;
+}
+
+
+
+//有自环时不加自环的边
+//缩点方法：清空路径，枚举E[]数组中存储的路径，建立双向边
+void tarjan(int root,int fa){
+    dfn[root]=low[root]=++idx;
+	//新点初始化
+    int child=0;
+//初始节点需要两个以上儿子且dfn[root]<=low[v]才是割点
+    for(int i=head[u);~i;i=edge[i].nxt{
+        int v=edge[i].v;
+        if(ef[i])continue;
+        ef[i]=ef[i^1]=1;
+        st[++top]=i;//边入栈
+        if(!dfn[v]){
+            child++;
+            tarjan(v,root);
+            low[root]=min(low[root],low[v]);
+            //if(dfn[root]<low[v])桥++
+            if(dfn[root]<=low[v]){
+//此点是割点，需注意初始节点要有两个儿子
+                N++;
+//注意这里N++,建数组时要注意开至少两倍大
+               for(;;){
+                    int j=st[top--];
+//bj[]数组用来标记节点所属的bcc，割点会改变，无意义。E[]存新图的边，esum是其数量，tarjan结束后建双向边
+                    if(bj[edge[j].v]!=N){
+                        bj[edge[j].v]=N;
+                        E[++esum]=make_pair(edge[j].v,N);
+                    }
+                    if(bj[edge[j^1].v]!=N){
+                        bj[edge[j^1].v]=N;
+                        E[++esum]=make_pair(edge[j^1].v,N);
+                    }
+                    belong[(j>>1)+1]=N;//标记边所属的bcc
+                    if(i==j)break;
+                }
+            }
+        }
+        else low[root]=min(low[root],dfn[v]);
+    }
+    if(root==fa&&child<2)isCut[root]=0;
+    //如果初始节点没有两个以上的儿子，标记清零 isCut[i]=1表示该点是割点
+}
+
+
+
+
+

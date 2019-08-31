@@ -1,0 +1,69 @@
+ #include<iostream>
+    #include<cstdio>
+    #include<cstring>
+    #include<string>
+    #include<algorithm>
+    using namespace std;
+    const int N=10005;
+    int n,m;
+    struct node
+    {
+        char name[20];
+        int cnt;
+        int score;
+    }stu[N];
+    bool cmp(node x,node y)
+    {
+        if(x.cnt!=y.cnt)
+        return x.cnt>y.cnt;
+        else if(x.score!=y.score)
+        return x.score<y.score;
+        else
+        return strcmp(x.name,y.name)<0;
+    }
+    int main()
+    {
+        while(~scanf("%d%d",&n,&m))
+        {
+            int t=0;
+            char ch[10];
+            while(scanf("%s",stu[t].name)!=EOF)
+            {
+                stu[t].cnt=0;stu[t].score=0;
+                for(int i=0;i<n;i++)
+                {
+                    scanf("%s",ch);
+
+                    if(ch[0]=='-')
+                        continue;
+
+                    if(strcmp(ch,"0")==0)
+                        continue;
+
+                    stu[t].cnt++;
+
+                    int j,tmp=0;
+
+                    for(j=0;j<strlen(ch);j++)
+                    {
+                        if(ch[j]=='(') break;
+                        tmp=tmp*10+ch[j]-'0';
+                    }
+                    stu[t].score+=tmp;
+                    tmp=0;
+                    if(j<strlen(ch))
+                    {
+                        for(int k=j+1;k<strlen(ch)-1;k++)
+                        {
+                            tmp=tmp*10+ch[k]-'0';
+                        }
+                    }
+                    stu[t].score+=tmp*m;
+                }
+                t++;
+            }
+            sort(stu,stu+t,cmp);                                                                                                             for(int i=0;i<t;i++){                                                                                                            printf("%-10s%3d%5d\n",stu[i].name,stu[i].cnt,stu[i].score);
+            }
+        }
+        return 0;
+    }

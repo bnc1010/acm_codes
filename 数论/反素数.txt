@@ -1,0 +1,16 @@
+void dfs(int dep,ll tmp,int num,int limit)//dep表示到第几个素数， 
+{//tmp表示当前可能ans值，num表示因子数 
+    if(dep>=16) return;//深度达到最大 
+    if(num>best)//best记的是当前最优num，有更优就更新 
+    {
+        best=num;
+        ans=tmp;
+    }
+    //当因子个数相同时，取值最小的
+    if(num==best&&ans>tmp) ans=tmp;
+    for(int i=1;i<=limit;i++)
+    {
+        if(n/p[dep]<tmp) break;
+        dfs(dep+1,tmp*=p[dept],num*(i+1));
+    }
+}

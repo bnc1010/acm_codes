@@ -1,0 +1,82 @@
+#include<bits/stdc++.h>
+using namespace std;
+const int M = 1e5 + 10 ;
+vector<int> g[M] ;
+int n ;
+
+vector<int> vs ;//dfs order
+int tot ;
+int orm[M] ;
+int id[M] ;
+int dep[M] ;
+
+int d[M][30] ;//RMQ
+void dfs (int o , int u ,int  DEP) {
+        int tmp = tot ++ ;
+        dep[u] = DEP ;
+        id[u] = vs.size () ;
+        orm[tmp] = u ;
+        vs.push_back (tmp) ;
+
+        for (int i = 0 ; i < g[u].size () ; i ++) {
+                int v = g[u][i] ;
+                if (v == o) continue ;
+                dfs (u , v , DEP + 1) ;
+        }
+        int len = vs.size () ;
+        if (vs[len-1] == tmp) vs.push_back (vs[id[o]]) ;
+        else vs.push_back (tmp) ;
+}
+
+void init_RMQ () {
+        for (int i = 0 ; i < 2*n-1 ; i ++) d[i][0] = vs[i] ;
+        for (int j = 1 ; (1 << j) <= n ; j ++) {
+                for (int i = 0 ; i + (1 << j) <= n ; i ++) {
+                        d[i][j] = min (d[i][j-1] , d[i+(1<<(j-1))][j-1]) ;
+                }
+        }
+}
+
+int RMQ (int l , int r) {
+        printf ("l = %d , r = %d\n" , l , r ) ;
+        int k = 0 ;
+        while ( (1<<(k+1)) <= r - l + 1) k ++ ;
+        int tmp = min (d[l][k] , d[1+r-(1<<k)][k]) ;
+        return orm[tmp] ;
+}
+void Print () {
+        for (int i = 0 ; i < 2*n-1 ; i ++) printf ("%3d " , i ) ; puts ("") ;
+        puts ("dfs order:") ;
+        for (int i = 0 ; i < 2*n-1 ; i ++) printf ("%3d " , vs[i]) ; puts ("") ;
+        puts ("deep:") ;
+        for (int i = 0 ; i < n ; i ++) printf ("%3d " , dep[i]) ; puts ("") ;
+        puts ("id :") ;
+        for (int i = 0 ; i < n ; i ++) printf ("%3d " , id[i]) ; puts ("") ;
+}
+
+void LCA () {
+        dfs (0,0,0) ;
+        init_RMQ () ;
+        Print () ;
+}
+
+int main () {
+        cin >> n ;
+        for (int i = 0 ; i < n - 1 ; i ++) {
+               int u , v ;
+               cin >> u >> v ;
+               g[u].push_back (v) ;
+               g[v].push_back (u) ;
+        }
+        LCA () ;
+        int Q ;
+        cin >> Q ;
+        while (Q --) {
+                int u , v ;
+                cin >> u >> v ;
+                if (id[u] > id[v]) swap (u , v ) ;
+                int ans = RMQ (id[u] , id[v]) ;
+                printf ("The %d and %d the lastest ans is %d , and they are away from %d\n" , u , v , ans , dep[u]+dep[v]-2*dep[ans]) ;
+        }
+        return 0 ;
+}

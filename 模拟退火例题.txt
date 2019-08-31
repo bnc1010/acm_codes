@@ -1,0 +1,59 @@
+#include<bits/stdc++.h>
+using namespace std;
+const int N=1005;
+const double eps=1e-15;
+int n;
+double x[N],y[N],w[N];
+
+double dis(double x1,double y1,double x2,double y2){
+    return sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
+}
+
+double cal(double xx,double yy){
+    double ret=0;
+    for(int i=1;i<=n;i++){
+        ret+=dis(x[i],y[i],xx,yy)*w[i];
+    }
+    return ret;
+}
+double tmp;
+double xx=0,yy=0;
+
+void sa(){
+    double T=100000,delta=0.98;
+    while(T>eps){
+        double dx=xx+(rand()*2-RAND_MAX)*T;
+        double dy=yy+(rand()*2-RAND_MAX)*T;
+        double ntmp=cal(dx,dy);
+        double de=ntmp-tmp;
+        if(de<0){
+            xx=dx;
+            yy=dy;
+            tmp=ntmp;
+        }
+        else{
+            if(exp(-de/T)*RAND_MAX>rand()){
+                xx=dx;
+                yy=dy;
+            }
+        }
+        T*=delta;
+    }
+}
+
+int main(){
+    scanf("%d",&n);
+    for(int i=1;i<=n;i++)scanf("%lf%lf%lf",&x[i],&y[i],&w[i]),xx+=x[i],yy+=y[i];
+    xx/=n,yy/=n;
+    tmp=cal(xx,yy);
+    sa();
+    sa();
+    sa();
+    sa();
+    sa();
+    sa();
+    sa();
+    printf("%.3f %.3f\n",xx,yy);
+    return 0;
+}
+

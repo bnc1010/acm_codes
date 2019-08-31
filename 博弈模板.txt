@@ -1,0 +1,30 @@
+
+
+
+
+
+
+
+
+
+
+//威佐夫博奕：有两堆各若干个物品，两个人轮流从某一堆或同时从两堆中取同样多的物品，规定每次至少取一个，多者不限，最后取光者得胜。
+bool Wythoff(int n,int m)
+{
+    if(n<m) swap(n,m);
+    int k=n-m;
+    n=(int)(k*(1+sqrt(5))/2.0);
+    if(n==m)
+        return 0;
+    else
+        return 1;
+}
+
+
+//巴什博弈 一堆n个石子，最少拿l个，最多拿r个，取光者胜
+bool Bash(int n,int r)
+{
+    if(n%(1+r))return true;
+    else return false;
+}
+

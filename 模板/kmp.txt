@@ -1,0 +1,53 @@
+#include <stdio.h>
+#include <string.h>
+char S[100006];
+char str[10000];
+int next[10000];
+void kmp()
+{
+	scanf("%s", str+1);
+	int len = strlen(str+1);
+	next[0] = -1;
+	next[1] = 0;
+	for(int i = 2;i <= len;i++)
+	{
+		int j = next[i-1];
+		while(j!=0 && str[j+1]!=str[i]) j = next[j];
+		if(str[j+1]==str[i]) j++;
+		next[i] = j;
+	}
+	
+} 
+
+int main()
+{ 
+	scanf("%s", S); 
+	int n;
+	scanf("%d", &n);
+	while(n--)
+	{
+		kmp();
+		
+		int i,j;
+		//for(j = 1;str[j]!='\0';j++)
+		//	printf("%d ",next[j]);
+		i = 0;
+		j = 1;
+		for(i = 0,j =1;S[i]!='\0';i++)
+		{
+			while(j > 1 && str[j] != S[i]) j = next[j-1]+1;
+			if(str[j]==S[i])
+				j++;
+			if(str[j]=='\0')
+			 	break;	
+				
+		}
+		
+		
+		if(j > strlen(str+1))
+		 printf("yes\n");
+		else printf("no\n"); 
+		
+		
+	}
+} 

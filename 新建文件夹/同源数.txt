@@ -1,0 +1,104 @@
+Problem E: 同源数
+Time Limit: 3 Sec  Memory Limit: 128 MB
+Submit: 1288  Solved: 224
+Description
+如果x和y的质因子集合完全相同，那么我们就说他们是同源的。
+比如说18 = 2 * 32，12 = 3 * 22；
+Input
+本题有多组数据（组数 <= 555555）。
+每组数据输入形如：
+x y
+x, y为整数（1 <= x, y <= 1e18）
+Output
+输出形入：
+ans
+如果x, y为同源数，那么ans为”Yes”, 不然为”No”.
+Sample Input
+18 12
+2 3
+Sample Output
+Yes
+No
+题解：数论，唯一分解定理，gcd(), 
+
+这个题是分析的时间最长的一个题了，最后想出解法后还因为没考虑到全面的情况，又花了很长的时间。首先读完题目的第一反应就是唯一分解定理，然后就卡壳了。突然想到了gcd(),就在纸上分析了一下，慢慢的才ac的。
+同源数，也就是他们的质因子的元素是相同的（个数不一定相同）。假如a=2*3*3*5*7,b=2*2*3*5*5*7,他们两个是同源数，对a,b求gcd(a,b)=g;显然g分解后质因子一定包含他们共有的质因子，即2*3*5*7，然后a,b都除以他们的质因子，如果两个数是同源数的话，那么让a一直除以a和g的gcd(),a=a/gcd(a,g),直到a==1或gcd(g,a)为止，如果a==1的说说明了a的质因子只包含了和g相同的质因子，如果a!=1&&gcd(a,g)==1的话，说明a和g互素，也就是a中的质因子有和g中的质因子不同的元素。同理对b也这样处理。如果a==1&&b==1的话说明是同源数，否则不是。
+特殊处理a==b和a==1||b==1的情况。
+
+[cpp] view plain copy
+
+ 
+#include<bits/stdc++.h>  
+  
+using namespace std;  
+unsigned long long gcd(unsigned long long a,unsigned long long b)  
+{  
+    return b==0?a:gcd(b,a%b);  
+}  
+int main()  
+{  
+    unsigned long long x,y;  
+    while(~scanf("%lld%lld",&x,&y))  
+    {  
+        if(x==y)  
+        {  
+            printf("Yes\n");  
+        }  
+        else if(x==1&&y!=1)  
+        {  
+            printf("No\n");  
+        }  
+        else if(x!=1&&y==1)  
+        {  
+            printf("No\n");  
+        }  
+        else  
+        {  
+            unsigned long long z=gcd(x,y);  
+            unsigned long long a,b;  
+            a=x/z;  
+            b=y/z;  
+            //cout<<z<<" "<<a<<" "<<b<<endl;  
+            int aa,bb;  
+            aa=1;  
+            bb=1;  
+  
+            while(1)  
+            {  
+                unsigned long long q;  
+                q=gcd(a,z);  
+                a=a/q;  
+                if(a==1)  
+                {  
+                    break;  
+                }  
+                if(q==1)  
+                {  
+                    aa=0;///不行  
+                    break;  
+                }  
+            }  
+            while(1)  
+            {  
+                unsigned long long q;  
+                q=gcd(b,z);  
+                b=b/q;  
+                if(b==1)  
+                {  
+                    break;  
+                }  
+                if(q==1)  
+                {  
+                    bb=0;///不行  
+                    break;  
+                }  
+            }  
+            if(aa&&bb)  
+            {  
+                printf("Yes\n");  
+            }  
+            else printf("No\n");  
+        }  
+    }  
+    return 0;  
+}  

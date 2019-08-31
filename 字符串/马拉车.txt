@@ -1,0 +1,16 @@
+void manacher(char *s){
+	int len=strlen(s);
+	for(int i=len;i>=0;--i){
+		s[i+i+2]=s[i];
+		s[i+i+1]='#';
+	}
+	s[0]='*';
+	int k=1,maxlen=0;
+	for(int i=2;i<len+len+1;++i){
+		int maxr=k+p[k]-1;
+		p[i]=min(p[2*k-i],max(maxr-i+1,1));
+		while(s[i-p[i]] == s[i+p[i]])++p[i];
+		if(i+p[i]>k+p[k])k=i;
+		if(p[i]>maxlen)maxlen=p[i];
+	}
+}

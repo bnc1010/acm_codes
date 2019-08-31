@@ -1,0 +1,10 @@
+球面距离公式是计算球面上两点间距离的公式。设所求点A ，纬度β1 ，经度α1 ；点B ，纬度β2 ，经度α2。则距离S=R·arc cos[cosβ1cosβ2cos（α1-α2）+sinβ1sinβ2]，其中R为球体半径。
+
+球面最短距离（非直线）
+double calculate(double r, double wa, double ja, double wb, double jb) {
+    return r*acos(cos(wa)*cos(wb)*cos(jb-ja) + sin(wa)*sin(wb));
+}
+
+正数表示北纬和东经。
+负数表示南纬和西经。
+

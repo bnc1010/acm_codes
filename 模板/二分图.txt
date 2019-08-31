@@ -1,0 +1,96 @@
+#include <iostream>
+#include <string.h>
+#include <stdio.h>
+using namespace std;
+const int N = 10088;
+int head[N],link[N];
+bool vis[N],col[N];
+int cnt,n,m;
+struct Edge
+{
+    int to;
+    int next;
+};
+Edge edge[10088];
+void Init()
+{
+    cnt = 0;
+    memset(vis,0,sizeof(vis));
+    memset(head,-1,sizeof(head));
+    memset(col,0,sizeof(col));
+}
+
+void add(int u,int v)
+{
+    edge[cnt].to = v;
+    edge[cnt].next = head[u];
+    head[u] = cnt++;
+}
+
+bool Color(int u)
+{
+    
+    for(int i=head[u]; i!=-1; i=edge[i].next)
+    {
+        int v = edge[i].to;
+        if(!col[v])
+        {
+            col[v] = !col[u];
+            if(!Color(v)) return false;
+        }
+        else if(col[v] == col[u])
+            return false;
+    }
+    return true;
+}
+
+bool dfs(int u)
+{
+   
+    for(int i=head[u]; ~i; i=edge[i].next)
+    {
+        int v = edge[i].to;
+        if(!vis[v])
+        {
+            vis[v] = 1;
+            if(link[v] == -1 || dfs(link[v]))
+            {
+                link[v] = u;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+int match()
+{
+    int ans = 0;
+    memset(link,-1,sizeof(link));
+    for(int i=1; i<=n; i++)
+    {
+        memset(vis,0,sizeof(vis));
+        if(dfs(i)) ans++;
+    }
+    return ans;
+}
+
+int main()
+{
+    int k;
+    while(scanf("%d", &k), k)
+    {
+        
+        Init();
+        scanf("%d%d", &n, &m);
+        while(k--)
+        {
+            int u,v;
+			scanf("%d%d",&u,&v);
+			v += 500;
+            add(u,v);
+            add(v,u);
+        }
+        printf("%d\n",match());
+    }
+}

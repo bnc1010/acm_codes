@@ -1,0 +1,101 @@
+#include <cstdio>
+#include <iostream>
+#include <algorithm>
+#include <cstring>
+#include <vector>
+#include <queue>
+using namespace std;
+struct edge
+{
+    int u, v, cap, flow;
+    edge() {}
+    edge(int u, int v, int cap, int flow) : u(u), v(v), cap(cap), flow(flow) {}
+} eg[2005];
+int tot, s, t;        //s表示起点，t表示终点，tot表示边的条数
+vector<int> tab[209]; //边集
+int dis[209];
+int current[209];
+void addedge(int u, int v, int cap)
+{
+    tab[u].push_back(tot);
+    eg[tot++] = edge(u, v, cap, 0); //正向边
+    tab[v].push_back(tot);
+    eg[tot++] = edge(v, u, 0, 0); //反向边容量为0
+    //正向边下标通过异或就得到反向边下标
+}
+int bfs()
+{
+    queue<int> q;
+    q.push(s);
+    memset(dis, 0x3f, sizeof(dis));
+    dis[s] = 0;
+    while (!q.empty())
+    {
+        int h = q.front();
+        q.pop();
+        for (int i = 0; i < tab[h].size(); i++)
+        {
+            edge &e = eg[tab[h][i]];
+            if (e.cap > e.flow && dis[e.v] == 0x3f3f3f3f)
+            {
+                dis[e.v] = dis[h] + 1;
+                q.push(e.v);
+            }
+        }
+    }
+    return dis[t] < 0x3f3f3f3f; //返回是否能够到达汇点
+}
+int dfs(int x, int maxflow)
+{
+    int i;
+    if (x == t || maxflow == 0)
+        return maxflow;
+    int flow = 0, f; //flow表示最后几条路的可以的流量，f是下面用来判断dfs
+    for (i = current[x]; i < tab[x].size(); i++)
+    {
+        current[x] = i;
+        edge &e = eg[tab[x][i]];
+        if (dis[e.v] == dis[x] + 1 && (f = dfs(e.v, min(maxflow, e.cap - e.flow))) > 0)
+        {
+            e.flow += f;
+            eg[tab[x][i] ^ 1].flow -= f;
+            flow += f;
+            maxflow -= f;
+            if (maxflow == 0)
+                break;
+        }
+    }
+    return flow;
+}
+int dinic()
+{
+    int flow = 0;
+    while (bfs())
+    {
+        memset(current, 0, sizeof(current)); //bfs后应当清空当前弧数组
+        flow += dfs(s, 0x3f3f3f3f);          //注意这里dfs搜的时候是搜多条的，直到这个层次图不能搜出新的增广路为止
+    }
+    return flow;
+}
+int main()
+{
+    int n, m, i, j, tcase, cas = 0;
+    int c, d, f;
+    scanf("%d", &tcase);
+    while (tcase--)
+    {
+        scanf("%d%d", &n, &m);
+        tot = 0;
+        s = 1; //从1开始编号
+        t = n; //n是终点
+        for (i = 1; i <= n; i++)
+            tab[i].clear();
+        for (i = 1; i <= m; i++)
+        {
+            scanf("%d%d%d", &c, &d, &f);
+            addedge(c, d, f);
+        }
+        printf("Case %d: %d\n", ++cas, dinic());
+    }
+    return 0;
+}

@@ -1,0 +1,123 @@
+费马小定理
+
+(a +  b) % p = (a%p +  b%p) %p  （对）
+(a  -  b) % p = (a%p  -  b%p) %p  （对）
+(a  *  b) % p = (a%p *  b%p) %p  （对）
+(a  /  b) % p = (a%p  /  b%p) %p  （错）
+
+a^(p-1) ≡1 (mod p)
+两边同除以a
+a^(p-2) ≡1/a (mod p)
+什么(,,? ? ?,,)，这可是数论，还敢写1/a
+应该写a^(p-2) ≡ inv(a) (mod p)
+ 
+所以inv(a) = a^(p-2) (mod p)
+
+LL pow_mod(LL a, LL b, LL p){//a的b次方求余p 
+    LL ret = 1;
+    while(b){
+        if(b & 1) ret = (ret * a) % p;
+        a = (a * a) % p;
+        b >>= 1;
+    }
+    return ret;
+}
+LL Fermat(LL a, LL p){//费马求a关于b的逆元 
+        return pow_mod(a, p-2, p);
+}
+
+
+
+拓展欧几里得求逆元
+
+a*x + b*y = 1
+如果ab互质，有解
+ 
+这个解的x就是a关于b的逆元
+y就是b关于a的逆元
+为什么呢？
+ 
+你看，两边同时求余b
+ 
+a*x % b + b*y % b = 1 % b
+a*x % b = 1 % b
+a*x = 1 (mod b)
+ 
+你看你看，出现了！！！(/≥▽≤/)
+所以x是a关于b的逆元
+反之可证明y
+
+void ex_gcd(LL a, LL b, LL &x, LL &y, LL &d){
+    if (!b) {d = a, x = 1, y = 0;}
+    else{
+        ex_gcd(b, a % b, y, x, d);
+        y -= x * (a / b);
+    }
+}
+LL inv(LL t, LL p){//如果不存在，返回-1 
+    LL d, x, y;
+    ex_gcd(t, p, x, y, d);
+    return d == 1 ? (x % p + p) % p : -1;
+}
+int main(){
+    LL a, p;
+    while(~scanf("%lld%lld", &a, &p)){
+        printf("%lld\n", inv(a, p));
+    }
+}
+
+
+当p是个质数的时候有
+inv(a) = (p - p / a) * inv(p % a) % p
+证明：
+设x = p % a,y = p / a
+于是有 x + y * a = p
+(x + y * a) % p = 0
+移项得 x % p = (-y) * a % p
+x * inv(a) % p = (-y) % p
+inv(a) = (p - y) * inv(x) % p
+于是 inv(a) = (p - p / a) * inv(p % a) % p
+
+LL inv(LL t, LL p) {//求t关于p的逆元，注意:t要小于p，最好传参前先把t%p一下 
+    return t == 1 ? 1 : (p - p / t) * inv(p % t, p) % p;
+}
+递推写法
+#include<cstdio>
+const int N = 200000 + 5;
+const int MOD = (int)1e9 + 7;
+int inv[N];
+int init(){
+    inv[1] = 1;
+    for(int i = 2; i < N; i ++){
+        inv[i] = (MOD - MOD / i) * 1ll * inv[MOD % i] % MOD;
+    }
+}
+int main(){
+    init();
+}
+
+
+
+
+(3) 逆元线性筛 ( P为质数 ) 
+求1,2,...,N关于P的逆元（P为质数）
+复杂度：O(N)
+代码：
+
+ 
+const int mod = 1000000009;  
+const int maxn = 10005;  
+int inv[maxn];  
+inv[1] = 1;  
+for(int i = 2; i < 10000; i++)  
+    inv[i] = inv[mod % i] * (mod - mod / i) % mod;  
+
+如果是求阶乘的逆元呢？（阶乘数组：fac[ ]）
+代码：
+
+
+
+ 
+inv[maxn]=mod_pow(fac[maxn],mod-2);  
+for(ll i=maxn-1;i>=0;i--)  
+    inv[i]=(inv[i+1]*(i+1))%mod;  

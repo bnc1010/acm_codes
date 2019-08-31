@@ -1,0 +1,42 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+const int N=10005;
+int num[N];
+int minn[N][20],maxn[N][20];
+int n,q;
+
+void bulid()
+{
+    for(int i=1;i<=n;i++)
+        maxn[i][0]=minn[i][0]=num[i];
+    int m=(int)(log((double)n)/log(2.0));
+    for(int j=1;j<=m;j++)
+    {
+        for(int i=1;i+(1<<j)-1<=n;i++)
+        {
+            minn[i][j]=min(minn[i][j-1],minn[i+(1<<(j-1))][j-1]);
+            maxn[i][j]=max(maxn[i][j-1],maxn[i+(1<<(j-1))][j-1]);
+        }
+    }
+}
+
+int rmp_find(int l,int r)
+{
+    int k=(int)(log(double(r-l+1))/log(2.0));
+    return max(maxn[l][k],maxn[r-(1<<k)+1][k])-min(minn[l][k],minn[r-(1<<k)+1][k]);
+}
+
+int main()
+{
+    scanf("%d%d",&n,&q);
+    for(int i=1;i<=n;i++)
+        scanf("%d",&num[i]);
+    bulid();
+    int l,r;
+    while(q--)
+    {
+        scanf("%d%d",&l,&r);
+        printf("%d\n",rmp_find(l,r));
+    }
+}

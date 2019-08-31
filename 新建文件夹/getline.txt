@@ -1,0 +1,21 @@
+1、  getline函数在遇到换行符“/n”时停止读入。
+eg：string line;
+cout<<”Enter a line of input:/n”;
+getline( cin, line );
+ 
+2、  允许程序员指定不同的停止读入标志。
+eg：string line;
+       cout<<”Enter some input:/n”;
+getline( cin, line, ‘?’ );           // 在第一个问号处停止读入
+ 
+3、  getline函数的返回值是一个输入流对象（一般就是cin）的引用，因此可以如下使用：
+eg：string s1, s2;
+       getline( cin, s1 ) >> s2;  // 先读入一行到s1，再读入一个不包含空白字符的字符串到s2
+ 
+ 总结：
+    与string对象一起使用的getline函数有两个：
+istream& getline( istream& ins, string& strVar, char delimiter );
+
+istream& getline( istream& ins, string& strVar );
+
+ 前一个函数从指定输入流istream对象中读入字符串，并将其存储在string类变量strVar中，直到遇到参数delimiter所指定的界定符为止，同时，界定符将从输入流中移除并抛弃；后一个函数使用换行符作为界定符，其余与前一个函数功能相同。

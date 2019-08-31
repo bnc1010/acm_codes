@@ -1,0 +1,39 @@
+#include<queue> 头文件
+定义  priority_queue<int> p;
+priority_queue<Type, Container, Functional>
+Type为数据类型， Container为保存数据的容器，Functional为元素比较方式。
+如果不写后两个参数，那么容器默认用的是vector，比较方式默认用operator<，也就是优先队列是大顶堆，队头元素最大。
+优先小的：1.priority_queue<int, vector<int>, greater<int> > p;  
+          2.操作符重载 
+struct Node{  
+    int x,y;  
+    Node(int a=0, int b=0):  
+        x(a), y(b) {}  
+};  
+  
+struct cmp{  
+    bool operator()(Node a, Node b){  
+        if(a.x == b.x)  return a.y>b.y;  
+        return a.x>b.x;  
+    }  
+};  
+  
+int main(){  
+    priority_queue<Node, vector<Node>, cmp>p; 
+。。。。
+} 
+      
+
+可以只有第一个参数，但是有第三个，第二个也必须要有
+
+
+struct tt
+{
+	int a;
+	int b;
+	bool operator < (const tt &x)const
+	{
+	if(a==x.a) return  b<x.b;
+	return  a<x.a;
+}
+};

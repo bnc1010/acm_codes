@@ -1,0 +1,97 @@
+const int InputBufferSize = 67108864;//输入缓冲区大小
+const int OutputBufferSize = 67108864;//输出缓冲区大小
+ 
+namespace input
+{
+    char buffer[InputBufferSize],*s,*eof;
+    inline void init()
+    {
+        assert(stdin!=NULL);
+        s=buffer;
+        eof=s+fread(buffer,1,InputBufferSize,stdin);
+    }
+    inline bool read(int &x)
+    {
+        x=0;
+        int flag=1;
+        while(!isdigit(*s)&&*s!='-')s++;
+        if(eof<=s)return false;
+        if(*s=='-')flag=-1,s++;
+        while(isdigit(*s))x=x*10+*s++-'0';
+        x*=flag;
+        return true;
+    }
+    inline bool read(char* str)
+    {
+        *str=0;
+        while(isspace(*s))s++;
+        if(eof<s)return false;
+        while(!isspace(*s))*str=0,*str=*s,str++,s++;
+        *str=0;
+        return true;
+    }
+}
+ 
+namespace output
+{
+    char buffer[OutputBufferSize];
+    char *s=buffer;
+    inline void flush()
+    {
+        assert(stdout!=NULL);
+        fwrite(buffer,1,s-buffer,stdout);
+        s=buffer;
+        fflush(stdout);
+    }
+    inline void print(const char ch)
+    {
+        if(s-buffer>OutputBufferSize-2)flush();
+        *s++=ch;
+    }
+    inline void print(char* str)
+    {
+        while(*str!=0)print(char(*str++));
+    }
+    inline void print(int x)
+    {
+        char buf[25]= {0},*p=buf;
+        if(x<0)print('-'),x=-x;
+        if(x==0)print('0');
+        while(x)*(++p)=x%10,x/=10;
+        while(p!=buf)print(char(*(p--)+'0'));
+    }
+}
+
+
+
+template <typename _Tp> inline _Tp read(_Tp&x){
+    char c11=getchar(),ob=0;x=0;
+    while(c11^'-'&&!isdigit(c11))c11=getchar();if(c11=='-')c11=getchar(),ob=1;
+    while(isdigit(c11))x=x*10+c11-'0',c11=getchar();if(ob)x=-x;return x;
+}
+
+
+
+
+
+
+
+
+template <class T> inline bool read(T &ret)
+{
+    char c;
+    if (c=getchar(),c==EOF)return 0; //EOF
+    while(c!='-'&&(c<'0'||c>'9'))c=getchar();
+    int sgn =(c=='-')?-1:1;
+    ret=(c=='-')?0:(c - '0');
+    while(c=getchar(),c>='0'&&c<='9') {
+        ret=ret*10+(c-'0');
+    }
+    ret *= sgn;
+    return 1;
+}
+template <class T> inline void print(T x)
+{
+    if(x>9) print(x/10);
+    putchar(x%10+'0');
+}

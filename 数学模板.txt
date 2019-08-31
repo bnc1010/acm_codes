@@ -1,0 +1,407 @@
+
+1.线性欧拉函数  2.快速幂  3.费马求逆元 &拓展欧几里得求逆元 4.逆元线性  5.阶乘逆元线性筛6.求组合数 7.线性素数筛 8.判断素数
+9.求球面上两点最短距离 10.gcd&lcm  11.矩阵快速幂  12.斐波那契  13..线性推莫比乌斯函数： 14.Miller-Rabin算法
+15.快速乘
+
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+const ll mod=(ll)1e9+7;
+const int maxn=100005;
+//ll fac[maxn];
+//ll inv[maxn];
+//ll euler[maxn];
+//bool isprime[maxn];
+//int prime[maxn];
+1.线性欧拉函数:
+
+void work_euler()//Onlogn
+{
+    euler[1]=1;
+    for(int i=2;i<maxn;i++)euler[i]=i;
+    for(int i=2;i<maxn;i++)
+        if(euler[i]==i)
+            for(int j=i;j<maxn;j+=i)
+                euler[j]=euler[j]/i*(i-1);
+}
+
+void work_euler(int n)//On
+{
+    memset(vis,1,sizeof(vis));vis[0]=vis[1]=false; 
+    phi[1]=1;
+    for (int i=2;i<=n;i++)
+    {
+        if(vis[i]) p[++p[0]]=i,phi[i]=i-1;
+        for(int j=1;j<=p[0]&&p[j]*i<=n;j++)
+        {
+            vis[p[j]*i]=false;
+            if (i%p[j]) phi[p[j]*i]=phi[p[j]]*phi[i]; 
+            else{phi[p[j]*i]=p[j]*phi[i];break;}
+        }
+    }
+}
+
+求单个数的欧拉函数：
+
+ll get_euler(ll x)
+{
+    ll res = x,a = x;
+    for(int i=2;i*i<=a;i++)
+    {
+        if(a%i==0)
+        {
+            res = res/i*(i-1);
+            while(a%i==0)a/=i;
+        }
+    }
+    if(a>1)res =res/a*(a-1);
+    return res;
+}
+
+2.快速幂：
+
+ll quick_pow(ll a,ll b)
+{
+    ll ret = 1;
+    while(b)
+    {
+        if(b&1)ret=(ret*a)%mod;
+        a=(a*a)%mod;
+        b>>=1;
+    }
+    return ret;
+}
+
+快速连乘：
+
+ll quick_mul(ll a,ll b,ll mod)
+{
+    ll res=0;
+    while(b)
+    {
+        if(b&1)
+            res=(res+a)%mod;
+        a=(a+a)%mod;
+        b>>=1;
+    }
+    return res;
+}
+
+3.费马求逆元:
+
+ll get_inv(ll a)//费马
+{
+        return quick_pow(a,mod-2);
+}
+
+拓展欧几里得：
+
+***************************************************
+ll work_ex_gcd(ll a,ll mod,ll &x,ll &y,ll &d)
+{
+    if (!b)
+        d=a,x=1,y=0;
+    else
+    {
+        work_ex_gcd(b,a%mod,y,x,d);
+        y-=x*(a/mod);
+    }
+}
+
+ll get_inv(ll t,ll mod)//没有就返回-1
+{
+    ll d,x,y;
+    work_ex_gcd(t,mod,x,y,d);
+    return d==1?(x%mod+mod)%mod:-1;
+}
+**********************************************************
+4.线性推逆元：
+
+void work_inv()
+{
+    inv[1]=1;  
+    for(int i=2;i<maxn;i++)  
+        inv[i]=inv[mod%i]*(mod-mod/i)%mod;  
+}
+
+5.阶乘逆元线性：
+
+void work_inv_of_fac()
+{
+    fac[0]=1;
+    for(int i=1;i<=maxn;i++)fac[i]=fac[i-1]*i%mod;
+    inv[maxn]=quick_pow(fac[maxn],mod-2);
+    for(ll i=maxn-1;i>=0;i--)inv[i]=(inv[i+1]*(i+1))%mod;  
+}
+
+6.求组合数：
+一：
+ll get_Cab(ll a,ll b)//公式法求组合数
+{
+    return fac[a]*inv[b]%mod*inv[a-b]%mod;
+}
+
+二：
+ll get_Cab_from_Ca0(ll a,ll b)//底很大的时候
+{
+    ll cab=1;
+    for(ll i=0;i<b;i++)
+        cab=cab*(m-i)%mod;
+    return cab*inv[b]%mod;
+}
+
+7.线性素数筛：
+
+void work_sieve_prime()//外部需要定义上限N
+{
+    isprime[2]=true;
+    for(int i=3;i<N;i++)
+    {
+        if(i%2)isprime[i]=true;
+        else isprime[i]=false;
+    }
+    for(int i=3;i<N;i++)
+        if(isprime[i])
+            for(int j=i*2;j<N;j+=i)
+                isprime[j]=false;
+}
+
+更优秀的筛法：
+
+int tot;
+
+void work_sieve_prime()//外部定义tot表示素数总数。获得一个1~tot的素数数组
+{
+    tot=0;
+    for(int i=2;i<N;i++)
+    {
+        if(!isprime[i])prime[++tot]=i;
+        for(int j=1;j<=num&& prime[j]*i<N;j++)
+        {
+            isprime[prime[j]*i]=1;
+            if(i%prime[j]==0)break;
+        }
+    }
+}
+
+
+8.基于素数筛的素数判断：
+
+bool judge_prime(ll a)
+{
+    return isprime[a]==true?true:false;
+}
+
+最基本Osqrt(n)的素数判断：//太low,基本没用
+
+bool judge_prime(ll a)
+{
+    if(a==1)return false;
+    if(a==2)return true;
+    for(ll i=2;i<=sqrt(a);i++)
+        if(a%i==0)
+            return false;
+    return true;
+}
+
+9.求球面上两点最短距离：
+
+double get_min_dis_on_ball(double r,double wa,double ja,double wb,double jb)
+{
+    return r*acos(cos(wa)*cos(wb)*cos(jb-ja) + sin(wa)*sin(wb));
+}
+//注：点A:纬度wa,经度ja   点B:纬度wb,经度jb   北纬和东经为正
+
+10.gcd:
+
+ll get_gcd(ll a,ll b)
+{
+    return b==0?a:gcd(b,a%b);
+}
+
+lcm:
+
+ll get_lcm(ll a,ll b)
+{
+    //return a*b%mod*get_inv(get_gcd(a,b))%mod; //有mod
+    return a*b/get_gcd(a,b); //如果爆范围先除再乘
+}
+
+11.矩阵快速幂：
+//****************************************************************************************
+struct Matrix
+{
+    ll m[10][10];
+} I,A,B,T;//I:单位矩阵,A:等比矩阵,B:运算矩阵,T:答案矩阵
+
+int matrixsize=2;//根据等比矩阵大小修改
+
+Matrix Mul(Matrix a,Matrix b)
+{
+    Matrix c;
+    for(int i=1;i<=matrixsize;i++)
+    {
+        for(int j=1;j<=matrixsize;j++)
+        {
+            c.m[i][j]=0;
+            for(int k=1;k<=matrixsize;k++)
+            {
+                c.m[i][j]+=(a.m[i][k]*b.m[k][j]);
+                c.m[i][j]%=mod;
+            }
+        }
+    }
+    return c;
+}
+
+Matrix mat_quick_pow(ll n)
+{
+    Matrix m=A,b=I;
+    while(n>0)
+    {
+        if(n&1)
+            b=Mul(b,m);
+        n>>=1;
+        m=Mul(m,m);
+    }
+    return b;
+}
+
+void work_init()
+{
+    memset(I.m,0,sizeof(I.m));
+    memset(A.m,0,sizeof(A.m));
+    memset(B.m,0,sizeof(B.m));
+    for(int i=1;i<=matrixsize;i++)I.m[i][i]=1;
+    //计算出等比矩阵A并赋值
+    //init A
+    //A.m[1][1]=A.m[1][2]=A.m[2][1]=1;
+    //B.m[1][1]=B.m[2][1]=1;
+}
+//******************************************************************************************
+
+12.斐波那契：
+
+void work_fib_num()
+{
+    fib[0]=0;fib[1]=fib[2]=1;
+    for(int i=3;i<maxn;i++)
+        fib[i]=(fib[i-1]+fib[i-2])%mod;
+}
+
+
+13.线性推莫比乌斯函数：
+
+void work_mobius()
+{
+    mu[1]=1;
+    int cnt=0;
+    for(int i=2;i<=maxn;i++)
+    {
+        if(!vis[i])
+        {
+            prime[cnt++]=i;
+            mu[i]=-1;
+        }
+        for(int j=0;j<cnt&&i*prime[j]<=maxn;j++)
+        {
+            vis[i*prime[j]]=true;
+            if(i%prime[j]) mu[i*prime[j]]=-mu[i];
+            else
+            {
+                mu[i*prime[j]]=0;
+                break;
+            }
+        }
+    }
+}
+
+14.Miller-Rabin算法：
+****************************************************
+ll quick_mul(ll a,ll b,ll mod)
+{
+    ll res=0;
+    while(b)
+    {
+        if(b&1)
+            res=(res+a)%mod;
+        a=(a+a)%mod;
+        b>>=1;
+    }
+    return res;
+}
+
+ll quick_pow_by_qmul(ll a,ll n,ll mod)
+{
+    ll res=1;
+    while(n)
+    {
+        if(n&1)
+            res=quick_mul(res, a, mod);
+        a = quick_mul(a, a, mod);
+        n >>= 1;
+    }
+    return res;
+}
+
+bool judge_big_prime(ll n)//Miller_Rabin
+{
+    if (n==2)
+        return true;
+    if (n<2||!(n&1))
+        return false;
+    ll m=n-1,k=0;
+    while(!(m&1))
+    {
+        k++;
+        m>>=1;
+    }
+    for (int i=1;i<=20;i++)  // 20为Miller-Rabin测试的迭代次数
+    {
+        ll a=rand()%(n-1)+1;
+        ll x=quick_pow_by_qmul(a,m,n);
+        ll y;
+        for (int j=1;j<=k;j++)
+        {
+            y=quick_mul(x,x,n);
+            if(y==1&&x!=1&&x!=n-1)
+                return false;
+            x=y;
+        }
+        if (y!=1)
+            return false;
+    }
+    return true;
+}
+
+************************************************************************
+
+
+15 快速乘
+Ologn
+long long qmult(ll a,ll b,ll mod){
+    a%=c;
+    b%=c;
+    ll ret=0;
+    ll tmp=a;
+    while(b){
+        if(b&1){
+        ret+=tmp;
+        if(ret>mod)ret-=mod;//直接取模慢很多
+        }
+        tmp<<=1;
+        if(tmp>mod)tmp-=mod;
+        b>>=1;
+    }
+    return ret;
+}
+
+
+O1
+
+ll qmult(ll x,ll y,ll mod)
+{
+    return (x*y-(ll)((long double)x/mod*y)*mod+mod)%mod;     
+}
+
+

@@ -1,0 +1,58 @@
+struct Tire{
+    static const int NODENUM=(int)1e6+5,R=26;
+    int nxt[NODENUM][R],fail[NODENUM],ed[NODENUM];
+    int rt,tot;
+    int newnode(){
+        for(int i=0;i<R;i++)nxt[tot][i]=-1;
+        ed[tot]=0;
+        return tot++;
+    }
+    void init(){
+        tot=0;
+        rt=newnode();
+    }
+    void insert(char *s){
+        int now=rt,len=strlen(s);
+        for(int i=0;i<len;i++){
+            int val=s[i]-'a';
+            if(nxt[now][val]==-1)nxt[now][val]=newnode();
+            now=nxt[now][val];
+        }
+        ed[now]++;
+    }
+    void build(){
+        queue<int>q;
+        fail[rt]=rt;
+        for(int i=0;i<R;i++){
+            if(nxt[rt][i]==-1)nxt[rt][i]=rt;
+            else {
+                fail[nxt[rt][i]]=rt;
+                q.push(nxt[rt][i]);
+            }
+        }
+        while(!q.empty()){
+            int now=q.front();q.pop();
+            for(int i=0;i<R;i++){
+                if(nxt[now][i]==-1)nxt[now][i]=nxt[fail[now]][i];
+                else {
+                    fail[nxt[now][i]]=nxt[fail[now]][i];
+                    q.push(nxt[now][i]);
+                }
+            }
+        }
+    }
+    int query(char *s){
+        int now=rt,res=0,len=strlen(s);
+        for(int i=0;i<len;i++){
+            int val=s[i]-'a';
+            now=nxt[now][val];
+            int tmp=now;
+            while(tmp!=rt){
+                res+=ed[tmp];
+                ed[tmp]=0;
+                tmp=fail[tmp];
+            }
+        }
+        return res;
+    }
+}ac;

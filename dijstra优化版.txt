@@ -1,0 +1,61 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+const int mod = (int) 1e9+7;
+
+int n,m,dist[205],head[205],now;
+struct edge{
+	int to,next,val;
+}e[20005];
+void init(int x,int y,int v){
+	e[++now].to=y,e[now].val=v,e[now].next=head[x],head[x]=now;
+	e[++now].to=x,e[now].val=v,e[now].next=head[y],head[y]=now;
+}
+
+struct node{
+	int id,val;
+	node(){}
+	node(int id,int val):id(id),val(val){}
+	bool operator < (const node &x)const{
+		return val > x.val;
+	}
+};
+
+void dij(int x){
+	dist[x]=0;
+	priority_queue<node> q;
+	q.push(node(x,0));
+	while(!q.empty()){
+		node u=q.top();
+		q.pop();
+		if(u.val!=dist[u.id])continue;
+		for(int i=head[u.id];~i;i=e[i].next){
+			int v=e[i].to;
+			if(dist[v]-e[i].val>dist[u.id]){
+				dist[v]=dist[u.id]+e[i].val;
+				q.push(node(v,dist[v]));
+			}
+		}
+	}
+}
+
+
+int main()
+{
+    while(~scanf("%d%d",&n,&m))
+    {
+
+        if(n==0&&m==0)break;
+        memset(head,-1,sizeof(head));
+        fill(dist,dist+200,mod);
+        now=0;
+        int x,y,z;
+        for(int i=1;i<=m;i++)
+        {
+            scanf("%d%d%d",&x,&y,&z);
+            init(x,y,z);
+        }
+        dij(1);
+        printf("%d\n",dist[n]);
+    }
+}

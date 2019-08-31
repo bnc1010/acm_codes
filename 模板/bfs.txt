@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <queue> 
+#include <string.h>
+
+using namespace std;
+char maps[12][12][12];
+int visited[12][12][12];
+int sx, sy, sz, ex, ey, ez;
+int n;
+int dx[6]={1,-1,0, 0,0, 0};
+int dy[6]={0, 0,1,-1,0, 0};
+int dz[6]={0, 0,0, 0,1,-1};
+struct node{
+	int x;
+	int y;
+	int z;
+	int t;
+};
+queue<node>q;
+int judge(int x, int y, int z)
+{
+	if(x<0 || y<0 || z<0 || x>=n || y>=n || z>=n || visited[x][y][z] ||maps[x][y][z]=='X')
+		return 0;  
+	return 1;
+}
+int bfs()
+{
+	while(!q.empty()) q.pop();
+	node now, next;
+	now.x = sx;
+	now.y = sy;
+	now.z = sz;
+	now.t = 0;
+	visited[sx][sy][sz] = 1;
+	q.push(now);
+	while(!q.empty())
+	{
+		now = q.front();
+		q.pop();
+		if(now.x==ex && now.y==ey && now.z==ez)
+		{
+			return now.t;
+		}
+		for(int i = 0;i < 6;i++)
+		{
+			next.t = 1 + now.t;
+			next.x = now.x + dx[i];
+			next.y = now.y + dy[i];
+			next.z = now.z + dz[i]; 
+			if(judge(next.x,next.y,next.z))
+			{
+				visited[next.x][next.y][next.z] = 1;
+				q.push(next);
+			}
+			
+		}
+	}
+	return -1;
+}
+int main()
+{
+	char temp[100];
+	while(~scanf("%s%d",temp, &n))
+	{
+		memset(visited,0,sizeof(visited));
+		for(int i = 0;i < n;i++)
+			for(int j = 0;j < n;j++)
+				scanf("%s", maps[i][j]);
+		scanf("%d%d%d%d%d%d",&sz,&sy,&sx,&ez,&ey,&ex);
+ 		scanf("%s",temp);
+ 		int ans = bfs();
+	 	printf(ans==-1 ? "NO ROUTE\n" : "%d %d\n", n, ans);
+	}
+} 

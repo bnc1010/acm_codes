@@ -1,0 +1,63 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+const int N=300005;
+const ll mod=998244353;
+ll a[N],b[N];
+int n,fn,m;
+
+ll qpow(ll a,ll b)
+{
+    ll t=1;
+    while (b)
+    {
+        if (b&1)
+           t=(t*a)%mod;
+        b>>=1;
+        a=(a*a)%mod;
+    }
+    return t;
+}
+
+void NTT(int n,ll *a,int opt)
+{
+    int i,j=0,k;
+    for (i=0;i<n;i++)
+    {
+        if (i>j) swap(a[i],a[j]);
+        for (int l=n>>1;(j^=l)<l;l>>=1);
+    }
+    for (i=1;i<n;i<<=1)  //每次合并的小区间
+    {
+        ll wn=qpow(3,(mod-1)/(i<<1));   ///(mod-1)/(i<<1)
+        int m=i<<1;
+        for (j=0;j<n;j+=m)
+        {
+            ll w=1;
+            for (k=0;k<i;k++,w=(w*wn)%mod)
+            {
+                ll z=(a[j+i+k]*w)%mod;
+                a[i+j+k]=(a[j+k]-z+mod)%mod;
+                a[j+k]=(a[j+k]+z)%mod;
+            }
+        }
+    }
+    if (opt==-1) reverse(a+1,a+n);  ///
+}
+
+int main()
+{
+    scanf("%d%d",&n,&m);
+    for (int i=0;i<=n;i++) scanf("%lld",&a[i]);
+    for (int i=0;i<=m;i++) scanf("%lld",&b[i]);
+    fn=1;
+    while (fn<=n+m) fn<<=1;
+    NTT(fn,a,1); NTT(fn,b,1);
+    for (int i=0;i<=fn;i++) a[i]=(a[i]*b[i])%mod;
+    NTT(fn,a,-1);
+
+    ll t=qpow(fn,mod-2);
+    for (int i=0;i<fn;i++) a[i]=(a[i]*t)%mod;
+    for (int i=0;i<=m+n;i++) printf("%lld ",a[i]);
+    return 0;
+}

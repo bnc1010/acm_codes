@@ -1,0 +1,27 @@
+int tree[maxn][30];
+int tsize[maxn];
+int tot;
+
+void add_edge(char *s){
+    int len=strlen(s);
+    int rt=0;
+    for(int i=0;i<len;i++)
+    {
+        int xb=s[i]-'a';
+        if(!tree[rt][xb])tree[rt][xb]=++tot;
+        tsize[tree[rt][xb]]++;
+        rt=tree[rt][xb];
+    }
+}
+
+int query(char *s){
+    int len=strlen(s);
+    int rt=0;
+    for(int i=0;i<len;i++)
+    {
+        int xb=s[i]-'a';
+        if(!tree[rt][xb])return 0;
+        rt=tree[rt][xb];
+    }
+    return tsize[rt];
+}

@@ -1,0 +1,247 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+#include<vector>
+#include<queue>
+using namespace std;
+typedef pair<int,int> pi;
+#define mp(a,b) make_pair(a,b)
+vector<pi>sp[100005];
+int vis[100005];
+void dfs(int t,int f,int w){
+	for(int i=0;i<sp[t].size();i++){
+		pi r=sp[t][i];
+//		if(vis[f.first])continue;
+		if(r.first==f)continue;
+		printf("%d %d\n",r.first,w+r.second);
+		vis[r.first]=1;
+		dfs(r.first,t,w+r.second);
+	}
+}
+int main(){
+	int n,m,i,j;
+	cin>>n>>m;
+	for(i=1;i<=m;i++){
+		int x,y,w;
+		cin>>x>>y>>w;
+		sp[x].push_back(mp(y,w));
+		sp[y].push_back(mp(x,w));
+		// sp[x].push_back(y) 有向图 
+	}
+//	for(i=1;i<=n;i++){
+//		if(!vis[i]){
+	//		vis[i]=1;
+	//		printf("%d\n",i);
+			dfs(1,1,0);
+//		}
+//	}
+	return 0;
+}
+
+
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+#include<vector>
+#include<queue>
+using namespace std;
+typedef pair<int,int> pi;
+#define mp(a,b) make_pair(a,b)
+vector<pi>sp[100005];
+int vis[100005];
+queue<int>tp;
+int main(){
+	int n,m,i,j;
+	cin>>n>>m;
+	for(i=1;i<=m;i++){
+		int x,y,w;
+		cin>>x>>y>>w;
+		sp[x].push_back(mp(y,w));
+		sp[y].push_back(mp(x,w));
+		// sp[x].push_back(y) 有向图 
+	}
+	vis[1]=1;
+	tp.push(1);
+	while(!tp.empty()){
+		int f=tp.front();
+		tp.pop();
+		for(i=0;i<sp[f].size();i++){
+			int v=sp[f][i].first;
+			if(vis[v])continue;
+			vis[v]=vis[f]+1;
+			tp.push(v);
+		}
+	}
+	for(i=1;i<=n;i++){
+		printf("%d %d\n",i,vis[i]-1);
+	}
+	return 0;
+}
+
+
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+#include<vector>
+#include<queue>
+using namespace std;
+struct node{
+	int to,nex,val;
+}edge[200005];
+int head[100005],cnt;//head[i]代表  以i结点开始的第一条边的下标 
+void add(int u,int v,int w){
+	edge[cnt].to=v;
+	edge[cnt].val=w;
+	edge[cnt].nex=head[u];
+	head[u]=cnt;
+	cnt++; 
+}
+void dfs(int t,int f,int w){
+	for(int i=head[t];~i;i=edge[i].nex){
+		int v=edge[i].to;
+		if(v==f)continue;
+		dis[v]=w+edge[i].val;
+		dfs(v,t,w+edge[i].val);
+	}
+}
+int main(){
+	int n,m,i,j;
+	memset(head,-1,sizeof(head));
+	cin>>n>>m;
+	for(i=1;i<=m;i++){
+		int x,y,w;
+		cin>>x>>y;
+		w=1;
+		add(x,y,w);
+//		add(y,x,w);
+		// add(x,y,w)
+	}
+	dfs(1,1,0);
+	return 0;
+}
+/*
+        1   2   3   4   5 
+head   3  0  -1  -1  -1 
+cnt 1
+1-2
+     cnt to  nex
+edge  0   2   -1
+
+2-1
+     cnt to  nex
+edge  1   1   -1
+
+1-3
+     cnt to  nex
+edge  2   3   0
+1-4
+     cnt to  nex
+edge  3   4   2
+*/
+
+
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+#include<vector>
+#include<queue>
+using namespace std;
+struct node{
+	int to,nex,val;
+}edge[200005];
+int head[100005],cnt;//head[i]代表  以i结点开始的第一条边的下标 
+void add(int u,int v,int w){
+	edge[cnt].to=v;
+	edge[cnt].val=w;
+	edge[cnt].nex=head[u];
+	head[u]=cnt;
+	cnt++; 
+}
+int vis[100005];
+queue<int>tp;
+int main(){
+	int n,m,i,j;
+	memset(head,-1,sizeof(head));
+	cin>>n>>m;
+	for(i=1;i<=m;i++){
+		int x,y,w;
+		cin>>x>>y;
+		w=1;
+		add(x,y,w);
+//		add(y,x,w);
+		// add(x,y,w)
+	}
+	vis[1]=1;
+	tp.push(1);
+	while(!tp.empty()){
+		int f=tp.front();
+		tp.pop();
+		for(i=head[f];~i;i=edge[i].nex){
+			int v=edge[i].to;
+			if(vis[v])continue;
+			vis[v]=vis[f]+1;
+			tp.push(v);
+		}
+	}
+	return 0;
+}
+/*
+        1   2   3   4   5 
+head   3  0  -1  -1  -1 
+cnt 1
+1-2
+     cnt to  nex
+edge  0   2   -1
+
+2-1
+     cnt to  nex
+edge  1   1   -1
+
+1-3
+     cnt to  nex
+edge  2   3   0
+1-4
+     cnt to  nex
+edge  3   4   2
+*/
+
+
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+#include<vector>
+#include<queue>
+using namespace std;
+struct node{
+	int u,v,val;
+	bool operator<(const node& a)const{
+		return val<a.val;
+	}
+}edge[200005];
+int fa[200005];
+int findfa(int t){
+	return fa[t]==t?fa[t]:fa[t]=findfa(fa[t]);
+}
+int main(){
+	int n,m,i,j,ans=0;
+	while(scanf("%d%d",&n,&m)!=EOF){
+		ans=0;
+		for(i=1;i<=n;i++)fa[i]=i;
+		for(i=1;i<=m;i++)cin>>edge[i].u>>edge[i].v>>edge[i].val;
+		sort(edge+1,edge+1+m);
+		for(i=1;i<=m;i++){
+			int u=edge[i].u,v=edge[i].v;
+			if(findfa(u)!=findfa(v)){
+				ans+=edge[i].val;
+				fa[findfa(u)]=findfa(v);
+			}
+		}
+		cout<<ans<<endl;	
+	}
+	return 0;
+}

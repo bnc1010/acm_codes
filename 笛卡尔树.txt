@@ -1,0 +1,31 @@
+void build_ct(){
+    int tmp;
+    top=0;
+    for(int i=1;i<=n;i++){
+        vis[i]=false;
+        lc[i]=rc[i]=0;
+    }
+    for(int i=1;i<=n;i++){
+        tmp=top;
+        while(tmp&&a[st[tmp-1]]>a[i])tmp--;
+        if(tmp)rc[st[tmp-1]]=i;
+        if(top>tmp)lc[i]=st[tmp];
+        st[tmp++]=i;
+        top=tmp;
+    }
+    for(int i=1;i<=n;i++){
+        vis[lc[i]]=vis[rc[i]]=true;
+    }
+    for(int i=1;i<=n;i++){
+        if(!vis[i]){
+            ct_rt=i;
+            return;
+        }
+    }
+}
+
+void dfs(int rt,int l,int r){
+    ...
+    dfs(lc[rt],l,rt-1);
+    dfs(rc[rt],rt+1,r);
+}

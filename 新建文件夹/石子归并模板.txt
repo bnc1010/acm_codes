@@ -1,0 +1,31 @@
+#include <cstdio>
+#define min(x, y) (x > y ? y : x)
+#define INF 0x3f3f3f3f
+using namespace std;
+
+const int maxn = 210;
+int dp[maxn][maxn];
+int sum[maxn];
+int a[maxn];
+
+int main() {
+    
+    int n;
+    while (~scanf("%d", &n)) {
+        for (int i = 1; i <= n; i++) {
+            scanf("%d", &a[i]);
+            sum[i] = sum[i - 1] + a[i];
+        }
+        for (int len = 1; len < n; len++) { //操作区间的长度
+            for (int i = 1, j = len + 1; j <= n; i++, j++) { //始末
+                //检查是否匹配（非必须）
+                dp[i][j] = INF;
+                for (int s = i; s < j; s++) {
+                    dp[i][j] = min(dp[i][j], dp[i][s] + dp[s + 1][j] + sum[j] - sum[i - 1]);
+                }
+            }
+        }
+        printf("%d\n", dp[1][n]);
+    }
+    return 0;
+}

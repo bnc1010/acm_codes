@@ -1,0 +1,50 @@
+有向边tarjan
+
+void tarjan(int root){
+	dfn[root]=low[root]=++index;
+	st[++top]=root;
+	gson(i,root){
+		int v=edge[i].v;
+		if(!dfn[v]){
+			tarjan(v);
+			low[root]=min(low[root],low[v]);
+		}
+		else if(!scc[v])low[root]=min(low[root],dfn[v]);
+	}
+	if(low[root]==dfn[root]){
+		sccnum++;
+		for(;;){
+			int x=st[top--];
+			scc[x]=sccnum;
+			if(x==root)break;
+		}
+	}
+}
+
+无向图tarjan
+
+void tarjan(int root){
+	dfn[root]=low[root]=++index;
+	st[++top]=root;
+	gson(i,root){
+		int v=edge[i].v;
+		if(ef[i])continue;
+		ef[i]=ef[i^1]=1;
+		if(!dfn[v]){
+			tarjan(v);
+			low[root]=min(low[root],low[v]);
+			if(dfn[root]<low[v]){
+				//桥 
+			}
+		}
+		else low[root]=min(low[root],dfn[v]);
+	}
+	if(low[root]==dfn[root]){
+		bccnum++;
+		for(;;){
+			int x=st[top--];
+			bcc[x]=bccnum;
+			if(x==root)break;
+		}
+	}
+}

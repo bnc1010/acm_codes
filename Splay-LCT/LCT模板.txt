@@ -1,0 +1,47 @@
+#include<stdio.h>
+#include<algorithm>
+#define N 200005
+using namespace std;
+//struct stp{int x,y,a,b;}a[N];
+//bool cmp(stp a,stp b){return a.a<b.a;}
+int rev[N],mx[N],ch[N][2],V[N],pre[N],fa[N],st[N],t,size[N],n;
+//splay中数组：rev反转标记 mx节点最大值所在 ch树的儿子节点 
+//V节点value pre节点的父节点 st存节点的栈 
+//其他数组：fa 并查集
+int find(int x){return fa[x]==x?x:fa[x]=find(fa[x]);}//并查集 
+bool is_root(int x){return ch[pre[x]][0]!=x&&ch[pre[x]][1]!=x;}
+//判断x是否为其中一颗splay的根节点 
+void reverse(int x)
+{
+    rev[x]^=1;swap(ch[x][0],ch[x][1]);
+    rev[ch[x][0]]^=1;rev[ch[x][1]]^=1;
+}
+void update(int x)
+{
+    mx[x]=x;
+    if(V[mx[ch[x][0]]]>V[mx[x]])mx[x]=mx[ch[x][0]];
+    if(V[mx[ch[x][1]]]>V[mx[x]])mx[x]=mx[ch[x][1]];
+    size[x]=size[ch[x][0]]+size[ch[x][1]]+1;
+}
+void rotate(int x)
+{
+    int y=pre[x],z=pre[y];
+    bool f=ch[y][1]==x;
+    if(!is_root(y))ch[z][ch[z][1]==y]=x;
+    ch[y][f]=ch[x][!f];ch[x][!f]=y;
+    pre[x]=z;pre[y]=x;pre[ch[y][f]]=y;
+    update(y);update(x);
+}
+void splay(int x)
+{
+    st[t=1]=x;
+    for(int y=x;!is_root(y);st[++t]=y=pre[y]);
+    for(;t;t--)if(rev[st[t]])reverse(st[t]);
+    for(;!is_root(x);rotate(x))if(!is_root(pre[x]))
+        ch[pre[x]][0]==x^ch[pre[pre[x]]][0]==pre[x]?rotate(x):rotate(pre[x]);
+    update(x);
+}
+void access(int x){for(int t=0;x;ch[x][1]=t,t=x,x=pre[x])splay(x);}
+void make_root(int x){access(x);splay(x);rev[x]^=1;}
+void link(int x,int y){make_root(x);pre[x]=y;}//将x的父亲设为y 
+void cut(int x,int y){make_root(x);access(y);splay(y);pre[x]=ch[y][0]=0;}
