@@ -39,7 +39,6 @@ void dij(int x){
 	}
 }
 
-
 int main()
 {
     while(~scanf("%d%d",&n,&m))

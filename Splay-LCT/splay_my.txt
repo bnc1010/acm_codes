@@ -1,0 +1,180 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define L(x) ch[x][0]
+#define R(x) ch[x][1]
+const int  N=1e6+5;
+const int INF=1e9+7;
+int ch[N][2],pre[N],cnt[N],size[N],key[N];
+int tot,root;
+void newnode(int &u,int fa,int KEY){
+    u=++tot;
+    ch[u][0]=ch[u][1]=0;
+    pre[u]=fa;cnt[u]=size[u]=1;
+    key[u]=KEY;
+}
+
+void push_up(int x){
+    if(x){
+        size[x]=cnt[x];
+        if(ch[x][0])size[x]+=size[ch[x][0]];
+        if(ch[x][1])size[x]+=size[ch[x][1]];
+    }
+}
+
+void rotate(int u,int kind){//kind表示u在fa的哪一边
+    int fa=pre[u];
+    ch[fa][kind]=ch[u][!kind];
+    pre[ch[u][!kind]]=fa;
+    if(pre[fa])ch[pre[fa]][ch[pre[fa]][1]==fa]=u;
+    pre[u]=pre[fa];
+    ch[u][!kind]=fa;
+    pre[fa]=u;
+    push_up(fa);push_up(u);
+}
+
+void splay(int u,int goal){
+    int fa,kind;
+    while(pre[u]!=goal){
+        if(pre[pre[u]]==goal){
+            rotate(u,R(pre[u])==u);
+        }
+        else{
+            fa=pre[u];
+            kind=R(pre[fa])==fa;
+            if(ch[fa][kind]!=u){//不在同一侧
+                rotate(u,!kind);
+                rotate(u,kind);
+            }
+            else{
+                rotate(fa,kind);
+                rotate(u,kind);
+            }
+        }
+    }
+    push_up(u);
+    if(goal==0)root=u;
+}
+void add(int v){
+    if(root==0){
+        newnode(root,0,v);
+        return;
+    }
+    int now=root,fa=0;
+    while(true){
+        if(key[now]==v){
+            cnt[now]++;push_up(now);push_up(fa);splay(now,0);
+            break;
+        }
+        fa=now;
+        now=ch[now][key[now]<v];
+        if(now==0){
+            newnode(ch[fa][key[fa]<v],fa,v);
+            push_up(fa);splay(ch[fa][key[fa]<v],0);
+            break;
+        }
+    }
+}
+
+
+int getkth(int u,int k){//第k个键值的点
+    int s=size[L(u)]+cnt[u];
+    if(s==k) return key[u];
+    if(s>k) return getkth(L(u),k);
+    else return getkth(R(u),k-s);
+}
+
+int find(int u,int x){//查找键值为x的点的编号
+    if(key[u]==x)return u;
+    if(key[u]>x){
+        if(!L(u))return -1;
+        return find(L(u),x);
+    }
+    if(key[u]<x){
+        if(!R(u))return -1;
+        return find(R(u),x);
+    }
+    return -1;
+}
+
+int getpre(int u){//前驱
+    u=L(u);
+    while(R(u))u=R(u);
+    return u;
+}
+int getnext(int u){//后继
+    u=R(u);
+    while(L(u))u=L(u);
+    return u;
+}
+void del(int x){//删除编号为x的节点
+    if(cnt[x]>1){
+        cnt[x]--;
+        return ;
+    }
+    splay(x,0);
+    if(L(root)){
+        int p=getpre(x);
+        splay(p,root);
+        R(p)=R(root);
+        pre[R(root)]=p;
+        root=p;
+        pre[p]=0;
+        push_up(root);
+    }
+    else{
+        root=R(root);
+        pre[root]=0;
+    }
+}
+
+int upper(int v){
+    int now=root;
+    int result=INF;
+    while(now){
+        if(key[now]>v&&key[now]<result) result=key[now];
+        if(v<key[now]) now=L(now);
+        else now=R(now);
+    }
+    return result;
+}
+int lower(int v)
+{
+    int now=root;
+    int result=-INF;
+    while(now)
+    {
+        if(key[now]<v&&key[now]>result) result=key[now];
+        if(v>key[now]) now=R(now);
+        else now=L(now);
+    }
+    return result;
+}
+
+
+int main(){
+    int n;
+    scanf("%d",&n);
+    int op,x;
+    root=tot=0;
+    for(int i=1;i<=n;i++){
+        scanf("%d%d",&op,&x);
+        if(op==1){
+            add(x);
+        }
+        else if(op==2){
+            del(x);
+        }
+        else if(op==3){
+            printf("%d\n",find(root,x));
+        }
+        else if(op==4){
+            printf("%d\n",getkth(root,x));
+        }
+        else if(op==5){
+            printf("%d\n",lower(x));
+        }
+        else{
+            printf("%d\n",upper(x));
+        }
+    }
+}
